@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import Sidebar from './Sidebar';
+import { Box } from '@mui/material';
 import API from '../api';
 
 const Dashboard = () => {
@@ -23,7 +25,7 @@ const Dashboard = () => {
     e.preventDefault();
     try {
       await API.post('/tasks', { title, description });
-      fetchTasks();
+      fetchTasks(); 
       setTitle('');
       setDescription('');
     } catch (err) {
@@ -32,29 +34,32 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <h2>Task Dashboard</h2>
-      <form onSubmit={handleAddTask}>
-        <div>
-          <label>Title</label>
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        </div>
-        <div>
-          <label>Description</label>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
-        </div>
-        <button type="submit">Add Task</button>
-      </form>
+    <Box sx={{ display: 'flex' }}>
+      <Sidebar /> {/* Render Sidebar component */}
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <h2>Task Dashboard</h2>
+        <form onSubmit={handleAddTask}>
+          <div>
+            <label>Title</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+          </div>
+          <div>
+            <label>Description</label>
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+          </div>
+          <button type="submit">Add Task</button>
+        </form>
 
-      <h3>Your Tasks</h3>
-      <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <strong>{task.title}</strong> - {task.description}
-          </li>
-        ))}
-      </ul>
-    </div>
+        <h3>Your Tasks</h3>
+        <ul>
+          {tasks.map((task) => (
+            <li key={task.id}>
+              <strong>{task.title}</strong> - {task.description}
+            </li>
+          ))}
+        </ul>
+      </Box>
+    </Box>
   );
 };
 
