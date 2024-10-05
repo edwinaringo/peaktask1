@@ -1,20 +1,25 @@
 const { Task, Category } = require('../models');
 
 exports.createTask = async (req, res) => {
-  try {
-    const { title, description, categoryId } = req.body;
-    const task = await Task.create({
-      title,
-      description,
-      categoryId,
-      userId: req.user.id, 
-      completed: false,
-    });
-    res.status(201).json(task);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to create task' });
-  }
-};
+    try {
+      const { title, description, priority, dueDate, status, recurring, attachments, categoryId } = req.body;
+      const task = await Task.create({
+        title,
+        description,
+        priority,
+        dueDate,
+        status,
+        recurring,
+        attachments,
+        categoryId,
+        userId: req.user.id,
+      });
+      res.status(201).json(task);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to create task' });
+    }
+  };
+  
 
 exports.getAllTasks = async (req, res) => {
   try {
