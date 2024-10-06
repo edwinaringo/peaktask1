@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, Box, Button, TextField, LinearProgress } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Box, Button, TextField, LinearProgress, InputAdornment, IconButton } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import Sidebar from './Sidebar'; 
 import API from '../api'; 
 import moment from 'moment'; 
@@ -11,7 +12,7 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTasks, setFilteredTasks] = useState([]);
 
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   // Fetch tasks from API
   useEffect(() => {
@@ -43,6 +44,15 @@ const Dashboard = () => {
     }
   };
 
+  // Calculate days left for a task
+  const calculateDaysLeft = (dueDate) => {
+    const currentDate = moment();
+    const due = moment(dueDate);
+    const daysLeft = due.diff(currentDate, 'days');
+    return daysLeft >= 0 ? `${daysLeft} days left` : 'Overdue';
+  };
+
+  // Filter tasks that are due today
   const today = moment().format('YYYY-MM-DD');
   const todayTasks = tasks.filter((task) => moment(task.dueDate).format('YYYY-MM-DD') === today);
 
@@ -55,28 +65,39 @@ const Dashboard = () => {
     <Box sx={{ display: 'flex' }}>
       <Sidebar />
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, backgroundColor: '#F4F5FC' }}>
         {/* Search bar */}
-        <Box sx={{ display: 'flex', marginBottom: 3 }}>
+        <Box sx={{ display: 'flex', marginBottom: 4 }}>
           <TextField
-            label="Search by Category"
+            placeholder="Search by Category"
             variant="outlined"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            sx={{ flexGrow: 1, marginRight: 2 }}
+            fullWidth
+            sx={{
+              backgroundColor: '#fff',
+              borderRadius: '10px',
+              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.05)',
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleSearch} sx={{ color: '#7A4BFF' }}>
+                    <SearchIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          <Button variant="contained" onClick={handleSearch}>
-            Search
-          </Button>
         </Box>
 
         {loading ? (
           <Typography>Loading tasks...</Typography>
-        ) : (
-          <Grid container spacing={3}>
+        ) : filteredTasks.length > 0 ? (
+          <Grid container spacing={2}> 
             {/* Today's Task Section */}
             <Grid item xs={12}>
-              <Card sx={{ backgroundColor: '#f5f5f5', p: 2 }}>
+              <Card sx={{ backgroundColor: '#FFFFFF', p: 2, borderRadius: '20px', height: 200 }}>
                 <Grid container>
                   <Grid item xs={8}>
                     <Typography variant="h5" gutterBottom>
@@ -85,15 +106,19 @@ const Dashboard = () => {
                     <Typography variant="body1">
                       Check your daily tasks and schedules
                     </Typography>
-                    <Button variant="contained" sx={{ mt: 2 }} onClick={goToTodaysTasks}>
+                    <Button
+                      variant="contained"
+                      sx={{ mt: 2, backgroundColor: '#7A4BFF' }}
+                      onClick={goToTodaysTasks}
+                    >
                       Today's Schedule
                     </Button>
                   </Grid>
                   <Grid item xs={4}>
                     <img
-                      src="https://via.placeholder.com/150"
+                      src="/images/task.jpg"
                       alt="Task illustration"
-                      style={{ width: '100%' }}
+                      style={{ width: '50%' }} 
                     />
                   </Grid>
                 </Grid>
@@ -101,40 +126,47 @@ const Dashboard = () => {
             </Grid>
 
             {/* Task Cards Section */}
-            {filteredTasks.length > 0 ? (
-              filteredTasks.map((task) => (
-                <Grid item xs={12} sm={6} md={4} key={task.id}>           
-                  <Link to={`/edit-task/${task.id}`} style={{ textDecoration: 'none' }}>
-                    <Card sx={{ height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}>
-                      <CardContent>                       
-                        <Typography variant="h6">{task.title}</Typography>
-                        <Typography variant="body2" color="textSecondary">Priority: {task.priority}</Typography>                       
-                        <Typography variant="body2" color="textSecondary">
-                          Due Date: {task.dueDate ? moment(task.dueDate).format('MMM D, YYYY') : 'No due date'}
-                        </Typography> 
-                        <Typography variant="body2">Progress: {task.progress || 0}%</Typography> 
-                        <LinearProgress variant="determinate" value={task.progress || 0} sx={{ mt: 1 }} />
-                      </CardContent>
-                    </Card>
-                  </Link>
-               </Grid>
-              ))
-            ) : (
-              <Typography>No tasks found under this category.</Typography>
-            )}
+            {filteredTasks.map((task) => (
+              <Grid item xs={6} sm={4} md={3} key={task.id}>
+                <Link to={`/edit-task/${task.id}`} style={{ textDecoration: 'none' }}>
+                  <Card 
+                    sx={{ 
+                      width: '100%', 
+                      paddingTop: '60%',
+                      position: 'relative', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      justifyContent: 'space-between', 
+                      cursor: 'pointer', 
+                      backgroundColor: '#FFFFFF', 
+                      borderRadius: '20px',
+                      boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)',
+                    }}
+                  >
+                    <CardContent sx={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+                      <Typography variant="h6" sx={{ color: '#7A4BFF', fontWeight: 600 }}>{task.title}</Typography>
+                      <Typography variant="body2" sx={{ color: '#7A7A7A' }}>Priority: {task.priority}</Typography>                       
+                      <Typography variant="body2" sx={{ color: '#7A7A7A' }}>
+                        Due Date: {task.dueDate ? moment(task.dueDate).format('MMM D, YYYY') : 'No due date'}
+                      </Typography> 
+                      <Typography variant="body2" sx={{ mt: 1, color: '#7A4BFF' }}>
+                        {calculateDaysLeft(task.dueDate)}
+                      </Typography>
+                      <Typography variant="body2">Progress: {task.progress}%</Typography>
+                      <LinearProgress variant="determinate" value={task.progress} sx={{ mt: 1, backgroundColor: '#ECECEC' }} />
+                    </CardContent>
+                  </Card>
+                </Link>
+              </Grid>
+            ))
+            }
           </Grid>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
+            <img src="/images/dashboard.png" alt="No tasks" style={{ width: '500px', marginBottom: '20px' }} />
+            <Typography variant="h5" sx={{ color: '#7A4BFF' }}>No Tasks Available</Typography>
+          </Box>
         )}
-      </Box>
-
-      {/* Right Sidebar */}
-      <Box sx={{ width: 300, p: 3, bgcolor: '#f7f7f7' }}>
-        {/* Calendar Placeholder */}
-        <Card>
-          <CardContent>
-            <Typography variant="h6">Calendar</Typography>
-            <Typography variant="body2">Calendar placeholder here</Typography>
-          </CardContent>
-        </Card>
       </Box>
     </Box>
   );

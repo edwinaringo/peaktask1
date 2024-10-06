@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Typography, Card, CardContent, Grid, LinearProgress, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Box, Button, TextField, Typography, Card, CardContent, Grid, LinearProgress, MenuItem, Select, InputLabel, FormControl, Paper } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom'; 
 import API from '../api';
 import moment from 'moment';
@@ -46,7 +46,6 @@ const EditTask = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send updated task data to API
       await API.put(`/tasks/${id}`, taskData);
       alert('Task updated successfully!');
     } catch (error) {
@@ -75,54 +74,54 @@ const EditTask = () => {
         <Typography>Loading task details...</Typography>
       ) : (
         <Box>
-          {/* "Task Details" Heading */}
-          <Typography variant="h4" gutterBottom>
+          {/* Task Details Heading */}
+          <Typography variant="h4" gutterBottom sx={{ color: '#7A4BFF', fontWeight: '600' }}>
             Task Details
           </Typography>
 
           {/* Big Card for Task Details */}
-          <Card sx={{ mb: 4 }}>
+          <Paper sx={{ mb: 4, p: 3, borderRadius: '20px', backgroundColor: '#F4F5FC', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.05)' }}>
             <CardContent>
-              <Typography variant="h4" gutterBottom>{taskData.title}</Typography>
+              <Typography variant="h5" gutterBottom sx={{ color: '#7A4BFF', fontWeight: '600' }}>{taskData.title}</Typography>
               <Typography variant="body1" sx={{ mb: 2 }}>{taskData.description}</Typography>
 
               <Grid container spacing={2}>
                 <Grid item xs={6}>
-                  <Typography variant="body2">Priority: {taskData.priority}</Typography>
+                  <Typography variant="body2" sx={{ color: '#7A7A7A' }}>Priority: {taskData.priority}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2">Status: {taskData.status}</Typography>
+                  <Typography variant="body2" sx={{ color: '#7A7A7A' }}>Status: {taskData.status}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2">Category: {taskData.category?.name || 'No category'}</Typography>
+                  <Typography variant="body2" sx={{ color: '#7A7A7A' }}>Category: {taskData.category?.name || 'No category'}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2">Recurring: {taskData.recurring}</Typography>
+                  <Typography variant="body2" sx={{ color: '#7A7A7A' }}>Recurring: {taskData.recurring}</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2">
+                  <Typography variant="body2" sx={{ color: '#7A7A7A' }}>
                     Due Date: {taskData.dueDate ? moment(taskData.dueDate).format('MMM D, YYYY') : 'No due date'}
                   </Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2">
+                  <Typography variant="body2" sx={{ color: '#7A7A7A' }}>
                     Progress: {taskData.progress}%
                   </Typography>
-                  <LinearProgress variant="determinate" value={taskData.progress} sx={{ mt: 1 }} />
+                  <LinearProgress variant="determinate" value={taskData.progress} sx={{ mt: 1, backgroundColor: '#ECECEC' }} />
                 </Grid>
               </Grid>
 
               {taskData.attachments && (
-                <Typography variant="body2" sx={{ mt: 2 }}>
+                <Typography variant="body2" sx={{ mt: 2, color: '#7A7A7A' }}>
                   Attachments: <a href={taskData.attachments} target="_blank" rel="noopener noreferrer">{taskData.attachments}</a>
                 </Typography>
               )}
             </CardContent>
-          </Card>
+          </Paper>
 
           {/* Edit Form */}
           <form onSubmit={handleSubmit}>
-            <Typography variant="h5" gutterBottom>Edit Task</Typography>
+            <Typography variant="h5" gutterBottom sx={{ color: '#7A4BFF', fontWeight: '600' }}>Edit Task</Typography>
 
             <TextField
               label="Task Title"
@@ -132,6 +131,7 @@ const EditTask = () => {
               fullWidth
               margin="normal"
               required
+              sx={{ backgroundColor: '#fff', borderRadius: '10px' }}
             />
 
             <TextField
@@ -143,6 +143,7 @@ const EditTask = () => {
               margin="normal"
               multiline
               rows={3}
+              sx={{ backgroundColor: '#fff', borderRadius: '10px' }}
             />
 
             <FormControl fullWidth margin="normal">
@@ -152,6 +153,7 @@ const EditTask = () => {
                 name="priority"
                 value={taskData.priority}
                 onChange={handleChange}
+                sx={{ backgroundColor: '#fff', borderRadius: '10px' }}
               >
                 <MenuItem value="Low">Low</MenuItem>
                 <MenuItem value="Medium">Medium</MenuItem>
@@ -168,6 +170,7 @@ const EditTask = () => {
               fullWidth
               margin="normal"
               InputLabelProps={{ shrink: true }}
+              sx={{ backgroundColor: '#fff', borderRadius: '10px' }}
             />
 
             <FormControl fullWidth margin="normal">
@@ -177,6 +180,7 @@ const EditTask = () => {
                 name="status"
                 value={taskData.status}
                 onChange={handleChange}
+                sx={{ backgroundColor: '#fff', borderRadius: '10px' }}
               >
                 <MenuItem value="Pending">Pending</MenuItem>
                 <MenuItem value="In Progress">In Progress</MenuItem>
@@ -185,7 +189,19 @@ const EditTask = () => {
               </Select>
             </FormControl>
 
-            <Button variant="contained" type="submit" fullWidth sx={{ mt: 3 }}>
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              sx={{
+                mt: 3,
+                py: 2,
+                backgroundColor: '#7A4BFF',
+                fontSize: '16px',
+                fontWeight: '600',
+                borderRadius: '10px',
+              }}
+            >
               Update Task
             </Button>
           </form>
@@ -196,7 +212,7 @@ const EditTask = () => {
             color="error"
             onClick={handleDelete}
             fullWidth
-            sx={{ mt: 3 }}
+            sx={{ mt: 3, py: 2, fontSize: '16px', borderRadius: '10px' }}
           >
             Delete Task
           </Button>
