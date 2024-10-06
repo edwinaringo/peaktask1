@@ -1,72 +1,54 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import CategoryIcon from '@mui/icons-material/Category';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import { useNavigate } from 'react-router-dom';
+import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ChatIcon from '@mui/icons-material/Chat';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const Sidebar = () => {
-  const navigate = useNavigate(); 
-
-  const handleNavigation = (path) => {
-    navigate(path);
-  };
-
-  const drawerWidth = 240;
-
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: drawerWidth,
+        width: 240,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          width: drawerWidth,
+          width: 240,
           boxSizing: 'border-box',
         },
       }}
     >
       <List>
-        <ListItem button onClick={() => handleNavigation('/dashboard')}>
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItem>
-
-        <ListItem button onClick={() => handleNavigation('/add-task')}>
-          <ListItemIcon>
-            <AddBoxIcon />
-          </ListItemIcon>
-          <ListItemText primary="Add Task" />
-        </ListItem>
-
-        <ListItem button onClick={() => handleNavigation('/categories')}>
-          <ListItemIcon>
-            <CategoryIcon />
-          </ListItemIcon>
-          <ListItemText primary="Categories" />
-        </ListItem>
-
-        <ListItem button onClick={() => handleNavigation('/calendar')}>
-          <ListItemIcon>
-            <CalendarTodayIcon />
-          </ListItemIcon>
-          <ListItemText primary="Calendar" />
-        </ListItem>
-      </List>
-
-      <Divider />
-
-      <List>
-        {/* Additional Links */}
         <ListItem button>
           <ListItemIcon>
-            {/* Add any other icon */}
-            <HomeIcon />
+            <DashboardIcon />
           </ListItemIcon>
-          <ListItemText primary="Other Link" />
+          <ListItemText primary="Dashboard" />
+        </ListItem>
+        <ListItem button>
+          <ListItemIcon>
+            <AccessTimeIcon />
+          </ListItemIcon>
+          <ListItemText primary="Today's Task" />
+        </ListItem>
+        <ListItem button>
+          <ListItemIcon>
+            <CheckCircleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Completed Tasks" />
+        </ListItem>
+        <ListItem button>
+          <ListItemIcon>
+            <ChatIcon />
+          </ListItemIcon>
+          <ListItemText primary="Messages" />
+        </ListItem>
+        <ListItem button>
+          <ListItemIcon>
+            <SettingsIcon />
+          </ListItemIcon>
+          <ListItemText primary="Settings" />
         </ListItem>
       </List>
     </Drawer>
