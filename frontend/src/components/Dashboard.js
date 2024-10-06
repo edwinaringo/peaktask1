@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, Box, Avatar, LinearProgress, Button, Divider, TextField } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Box, Button, TextField, LinearProgress } from '@mui/material';
 import Sidebar from './Sidebar'; 
 import API from '../api'; 
 import moment from 'moment'; 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]); 
@@ -11,7 +11,9 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTasks, setFilteredTasks] = useState([]);
 
-  //fetch from api
+  const navigate = useNavigate();
+
+  // Fetch tasks from API
   useEffect(() => {
     fetchTasks();
   }, []);
@@ -19,8 +21,9 @@ const Dashboard = () => {
   const fetchTasks = async () => {
     try {
       const response = await API.get('/tasks'); 
-      setTasks(response.data); 
-      setFilteredTasks(response.data); 
+      const incompleteTasks = response.data.filter(task => task.status !== 'Completed');
+      setTasks(incompleteTasks); 
+      setFilteredTasks(incompleteTasks); 
     } catch (error) {
       console.error('Error fetching tasks:', error);
     } finally {
@@ -28,12 +31,11 @@ const Dashboard = () => {
     }
   };
 
-  // search by category
+  // Filter tasks by category
   const handleSearch = () => {
     if (searchQuery.trim() === '') {
       setFilteredTasks(tasks);
     } else {
-      // tasks based on category
       const filtered = tasks.filter(task => 
         task.category?.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
@@ -43,6 +45,11 @@ const Dashboard = () => {
 
   const today = moment().format('YYYY-MM-DD');
   const todayTasks = tasks.filter((task) => moment(task.dueDate).format('YYYY-MM-DD') === today);
+
+  // Navigate to Today's Tasks page
+  const goToTodaysTasks = () => {
+    navigate('/todays-tasks', { state: { tasks: todayTasks } });
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -78,7 +85,7 @@ const Dashboard = () => {
                     <Typography variant="body1">
                       Check your daily tasks and schedules
                     </Typography>
-                    <Button variant="contained" sx={{ mt: 2 }}>
+                    <Button variant="contained" sx={{ mt: 2 }} onClick={goToTodaysTasks}>
                       Today's Schedule
                     </Button>
                   </Grid>
@@ -105,8 +112,8 @@ const Dashboard = () => {
                         <Typography variant="body2" color="textSecondary">
                           Due Date: {task.dueDate ? moment(task.dueDate).format('MMM D, YYYY') : 'No due date'}
                         </Typography> 
-                        <Typography variant="body2">Progress: {task.progress}%</Typography>
-                        <LinearProgress variant="determinate" value={task.progress} sx={{ mt: 1 }} />
+                        <Typography variant="body2">Progress: {task.progress || 0}%</Typography> 
+                        <LinearProgress variant="determinate" value={task.progress || 0} sx={{ mt: 1 }} />
                       </CardContent>
                     </Card>
                   </Link>
@@ -115,17 +122,6 @@ const Dashboard = () => {
             ) : (
               <Typography>No tasks found under this category.</Typography>
             )}
-
-            
-            <Grid item xs={12}>
-              <Card sx={{ height: '250px' }}>
-                <CardContent>
-                  <Typography variant="h6">Tasks Completed</Typography>
-                  {/* Graph Placeholder */}
-                  <Typography variant="body2">Graph placeholder here</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
           </Grid>
         )}
       </Box>
@@ -136,7 +132,6 @@ const Dashboard = () => {
         <Card>
           <CardContent>
             <Typography variant="h6">Calendar</Typography>
-            
             <Typography variant="body2">Calendar placeholder here</Typography>
           </CardContent>
         </Card>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, TextField, Typography, MenuItem, InputLabel, Select, FormControl } from '@mui/material';
-import { useParams } from 'react-router-dom'; 
-import API from '../api'; 
+import { Box, Button, TextField, Typography, Card, CardContent, Grid, LinearProgress, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { useParams, useNavigate } from 'react-router-dom'; 
+import API from '../api';
+import moment from 'moment';
 
 const EditTask = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [taskData, setTaskData] = useState({
     title: '',
     description: '',
@@ -14,18 +16,23 @@ const EditTask = () => {
     recurring: 'None',
     attachments: '',
     progress: 0,
+    category: { name: '' },
   });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTask(); // Fetch the task details when the component mounts
+    fetchTask();
   }, []);
 
+  // Fetch task details from API
   const fetchTask = async () => {
     try {
-      const response = await API.get(`/tasks/${id}`); // Fetch task by ID
-      setTaskData(response.data); // Populate the form with the task data
+      const response = await API.get(`/tasks/${id}`);
+      setTaskData(response.data);
     } catch (error) {
       console.error('Error fetching task:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,10 +45,9 @@ const EditTask = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      // Send the entire task data, but only the changed fields will reflect the change
-      await API.put(`/tasks/${id}`, taskData); // Update the task by ID
+      // Send updated task data to API
+      await API.put(`/tasks/${id}`, taskData);
       alert('Task updated successfully!');
     } catch (error) {
       console.error('Error updating task:', error);
@@ -49,119 +55,153 @@ const EditTask = () => {
     }
   };
 
+  // Handle task deletion
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      try {
+        await API.delete(`/tasks/${id}`);
+        alert('Task deleted successfully!');
+        navigate('/dashboard');
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        alert('Failed to delete task.');
+      }
+    }
+  };
+
   return (
-    <Box sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Edit Task
-      </Typography>
-      <form onSubmit={handleSubmit}>
-        {/* Task Title */}
-        <TextField
-          label="Task Title"
-          name="title"
-          value={taskData.title} // Pre-fill the field with existing data
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
+    <Box sx={{ maxWidth: 800, margin: 'auto', mt: 4 }}>
+      {loading ? (
+        <Typography>Loading task details...</Typography>
+      ) : (
+        <Box>
+          {/* "Task Details" Heading */}
+          <Typography variant="h4" gutterBottom>
+            Task Details
+          </Typography>
 
-        {/* Task Description */}
-        <TextField
-          label="Task Description"
-          name="description"
-          value={taskData.description} // Pre-fill with existing data
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          multiline
-          rows={3}
-        />
+          {/* Big Card for Task Details */}
+          <Card sx={{ mb: 4 }}>
+            <CardContent>
+              <Typography variant="h4" gutterBottom>{taskData.title}</Typography>
+              <Typography variant="body1" sx={{ mb: 2 }}>{taskData.description}</Typography>
 
-        {/* Task Priority */}
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="priority-label">Priority</InputLabel>
-          <Select
-            labelId="priority-label"
-            name="priority"
-            value={taskData.priority} // Pre-fill with existing data
-            onChange={handleChange}
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="body2">Priority: {taskData.priority}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2">Status: {taskData.status}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2">Category: {taskData.category?.name || 'No category'}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2">Recurring: {taskData.recurring}</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2">
+                    Due Date: {taskData.dueDate ? moment(taskData.dueDate).format('MMM D, YYYY') : 'No due date'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2">
+                    Progress: {taskData.progress}%
+                  </Typography>
+                  <LinearProgress variant="determinate" value={taskData.progress} sx={{ mt: 1 }} />
+                </Grid>
+              </Grid>
+
+              {taskData.attachments && (
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                  Attachments: <a href={taskData.attachments} target="_blank" rel="noopener noreferrer">{taskData.attachments}</a>
+                </Typography>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Edit Form */}
+          <form onSubmit={handleSubmit}>
+            <Typography variant="h5" gutterBottom>Edit Task</Typography>
+
+            <TextField
+              label="Task Title"
+              name="title"
+              value={taskData.title}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              required
+            />
+
+            <TextField
+              label="Task Description"
+              name="description"
+              value={taskData.description}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              multiline
+              rows={3}
+            />
+
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="priority-label">Priority</InputLabel>
+              <Select
+                labelId="priority-label"
+                name="priority"
+                value={taskData.priority}
+                onChange={handleChange}
+              >
+                <MenuItem value="Low">Low</MenuItem>
+                <MenuItem value="Medium">Medium</MenuItem>
+                <MenuItem value="High">High</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              label="Due Date"
+              name="dueDate"
+              type="date"
+              value={taskData.dueDate ? moment(taskData.dueDate).format('YYYY-MM-DD') : ''}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
+
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="status-label">Status</InputLabel>
+              <Select
+                labelId="status-label"
+                name="status"
+                value={taskData.status}
+                onChange={handleChange}
+              >
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="In Progress">In Progress</MenuItem>
+                <MenuItem value="Completed">Completed</MenuItem>
+                <MenuItem value="Overdue">Overdue</MenuItem>
+              </Select>
+            </FormControl>
+
+            <Button variant="contained" type="submit" fullWidth sx={{ mt: 3 }}>
+              Update Task
+            </Button>
+          </form>
+
+          {/* Delete Task Button */}
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleDelete}
+            fullWidth
+            sx={{ mt: 3 }}
           >
-            <MenuItem value="Low">Low</MenuItem>
-            <MenuItem value="Medium">Medium</MenuItem>
-            <MenuItem value="High">High</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Task Due Date */}
-        <TextField
-          label="Due Date"
-          name="dueDate"
-          type="date"
-          value={taskData.dueDate} // Pre-fill with existing data
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          InputLabelProps={{ shrink: true }}
-        />
-
-        {/* Task Status */}
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="status-label">Status</InputLabel>
-          <Select
-            labelId="status-label"
-            name="status"
-            value={taskData.status} // Pre-fill with existing data
-            onChange={handleChange}
-          >
-            <MenuItem value="Pending">Pending</MenuItem>
-            <MenuItem value="In Progress">In Progress</MenuItem>
-            <MenuItem value="Completed">Completed</MenuItem>
-            <MenuItem value="Overdue">Overdue</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Recurring Task */}
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="recurring-label">Recurring</InputLabel>
-          <Select
-            labelId="recurring-label"
-            name="recurring"
-            value={taskData.recurring} // Pre-fill with existing data
-            onChange={handleChange}
-          >
-            <MenuItem value="None">None</MenuItem>
-            <MenuItem value="Daily">Daily</MenuItem>
-            <MenuItem value="Weekly">Weekly</MenuItem>
-            <MenuItem value="Monthly">Monthly</MenuItem>
-          </Select>
-        </FormControl>
-
-        {/* Attachments */}
-        <TextField
-          label="Attachments (URL)"
-          name="attachments"
-          value={taskData.attachments} // Pre-fill with existing data
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-
-        {/* Task Progress */}
-        <TextField
-          label="Progress (%)"
-          name="progress"
-          type="number"
-          value={taskData.progress} // Pre-fill with existing data
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          inputProps={{ min: 0, max: 100 }}
-        />
-
-        <Button variant="contained" type="submit" fullWidth sx={{ mt: 3 }}>
-          Update Task
-        </Button>
-      </form>
+            Delete Task
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

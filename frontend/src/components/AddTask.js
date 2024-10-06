@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, TextField, Typography, MenuItem, InputLabel, Select, FormControl } from '@mui/material';
 import API from '../api'; 
 
@@ -11,20 +11,37 @@ const AddTask = () => {
     status: 'Pending',
     recurring: 'None',
     attachments: '',
-    progress: 0,
+    progress: 0,  
+    categoryId: '', 
   });
+
+  const [categories, setCategories] = useState([]); 
+
+  // Fetch available categories from the backend
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await API.get('/categories'); 
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleChange = (e) => {
     setTaskData({
       ...taskData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value,  
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send taskData to the API
+      
       const response = await API.post('/tasks', taskData);
       console.log('Task created:', response.data);
       alert('Task created successfully!');
@@ -139,12 +156,30 @@ const AddTask = () => {
           name="progress"
           type="number"
           value={taskData.progress}
-          onChange={handleChange}
+          onChange={handleChange} 
           fullWidth
           margin="normal"
           required
           inputProps={{ min: 0, max: 100 }}
         />
+
+        {/* Category Selection */}
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="category-label">Category</InputLabel>
+          <Select
+            labelId="category-label"
+            name="categoryId"
+            value={taskData.categoryId}
+            onChange={handleChange}
+            required
+          >
+            {categories.map((category) => (
+              <MenuItem key={category.id} value={category.id}>
+                {category.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <Button variant="contained" type="submit" fullWidth sx={{ mt: 3 }}>
           Add Task

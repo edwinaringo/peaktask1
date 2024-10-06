@@ -2,13 +2,14 @@ const { Task, Category } = require('../models');
 
 exports.createTask = async (req, res) => {
     try {
-      const { title, description, priority, dueDate, status, recurring, attachments, categoryId } = req.body;
+      const { title, description, priority, dueDate, status, progress, recurring, attachments, categoryId } = req.body;
       const task = await Task.create({
         title,
         description,
         priority,
         dueDate,
         status,
+        progress,
         recurring,
         attachments,
         categoryId,
@@ -48,12 +49,10 @@ exports.getTaskById = async (req, res) => {
   }
 };
 
-
-
 exports.updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, completed, categoryId } = req.body;
+    const { title, description, completed, categoryId, status } = req.body;
     const task = await Task.findByPk(id);
 
     if (!task || task.userId !== req.user.id) {
@@ -64,6 +63,7 @@ exports.updateTask = async (req, res) => {
     task.description = description || task.description;
     task.completed = completed !== undefined ? completed : task.completed;
     task.categoryId = categoryId || task.categoryId;
+    task.status = status || task.status;
 
     await task.save();
     res.json(task);
@@ -71,6 +71,7 @@ exports.updateTask = async (req, res) => {
     res.status(500).json({ error: 'Failed to update task' });
   }
 };
+
 
 exports.deleteTask = async (req, res) => {
   try {
@@ -85,5 +86,20 @@ exports.deleteTask = async (req, res) => {
     res.json({ message: 'Task deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete task' });
+  }
+};
+
+exports.getCompletedTasks = async (req, res) => {
+  try {
+    const completedTasks = await Task.findAll({
+      where: {
+        userId: req.user.id,
+        status: 'Completed',
+      },
+      include: ['category'],
+    });
+    res.json(completedTasks);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch completed tasks' });
   }
 };

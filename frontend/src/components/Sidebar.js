@@ -36,6 +36,14 @@ const Sidebar = () => {
           <ListItemText primary="Add Task" />
         </ListItem>
 
+        {/* Add Category Link */}
+        <ListItem button component={Link} to="/add-category">
+          <ListItemIcon>
+            <AddIcon />
+          </ListItemIcon>
+          <ListItemText primary="Add Category" />
+        </ListItem>
+
         <ListItem button component={Link} to="/completed-tasks">
           <ListItemIcon>
             <CheckCircleIcon />
