@@ -17,13 +17,13 @@ const EditTask = () => {
   });
 
   useEffect(() => {
-    fetchTask(); 
+    fetchTask(); // Fetch the task details when the component mounts
   }, []);
 
   const fetchTask = async () => {
     try {
-      const response = await API.get(`/tasks/${id}`);
-      setTaskData(response.data);
+      const response = await API.get(`/tasks/${id}`); // Fetch task by ID
+      setTaskData(response.data); // Populate the form with the task data
     } catch (error) {
       console.error('Error fetching task:', error);
     }
@@ -38,8 +38,10 @@ const EditTask = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await API.put(`/tasks/${id}`, taskData);
+      // Send the entire task data, but only the changed fields will reflect the change
+      await API.put(`/tasks/${id}`, taskData); // Update the task by ID
       alert('Task updated successfully!');
     } catch (error) {
       console.error('Error updating task:', error);
@@ -57,18 +59,17 @@ const EditTask = () => {
         <TextField
           label="Task Title"
           name="title"
-          value={taskData.title}
+          value={taskData.title} // Pre-fill the field with existing data
           onChange={handleChange}
           fullWidth
           margin="normal"
-          required
         />
 
         {/* Task Description */}
         <TextField
           label="Task Description"
           name="description"
-          value={taskData.description}
+          value={taskData.description} // Pre-fill with existing data
           onChange={handleChange}
           fullWidth
           margin="normal"
@@ -82,7 +83,7 @@ const EditTask = () => {
           <Select
             labelId="priority-label"
             name="priority"
-            value={taskData.priority}
+            value={taskData.priority} // Pre-fill with existing data
             onChange={handleChange}
           >
             <MenuItem value="Low">Low</MenuItem>
@@ -96,12 +97,11 @@ const EditTask = () => {
           label="Due Date"
           name="dueDate"
           type="date"
-          value={taskData.dueDate}
+          value={taskData.dueDate} // Pre-fill with existing data
           onChange={handleChange}
           fullWidth
           margin="normal"
           InputLabelProps={{ shrink: true }}
-          required
         />
 
         {/* Task Status */}
@@ -110,7 +110,7 @@ const EditTask = () => {
           <Select
             labelId="status-label"
             name="status"
-            value={taskData.status}
+            value={taskData.status} // Pre-fill with existing data
             onChange={handleChange}
           >
             <MenuItem value="Pending">Pending</MenuItem>
@@ -126,7 +126,7 @@ const EditTask = () => {
           <Select
             labelId="recurring-label"
             name="recurring"
-            value={taskData.recurring}
+            value={taskData.recurring} // Pre-fill with existing data
             onChange={handleChange}
           >
             <MenuItem value="None">None</MenuItem>
@@ -140,7 +140,7 @@ const EditTask = () => {
         <TextField
           label="Attachments (URL)"
           name="attachments"
-          value={taskData.attachments}
+          value={taskData.attachments} // Pre-fill with existing data
           onChange={handleChange}
           fullWidth
           margin="normal"
@@ -151,11 +151,10 @@ const EditTask = () => {
           label="Progress (%)"
           name="progress"
           type="number"
-          value={taskData.progress}
+          value={taskData.progress} // Pre-fill with existing data
           onChange={handleChange}
           fullWidth
           margin="normal"
-          required
           inputProps={{ min: 0, max: 100 }}
         />
 

@@ -30,6 +30,26 @@ exports.getAllTasks = async (req, res) => {
   }
 };
 
+exports.getTaskById = async (req, res) => {
+  try {
+    const taskId = req.params.id; 
+    const task = await Task.findOne({
+      where: { id: taskId, userId: req.user.id }, 
+      include: ['category'],
+    });
+
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    res.json(task);
+  } catch (error) {
+    console.error('Error fetching task by ID:', error);
+    res.status(500).json({ error: 'Failed to fetch the task' });
+  }
+};
+
+
+
 exports.updateTask = async (req, res) => {
   try {
     const { id } = req.params;

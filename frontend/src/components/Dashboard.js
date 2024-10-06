@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, Box, Avatar, LinearProgress, Button, Divider } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Box, Avatar, LinearProgress, Button, Divider, TextField } from '@mui/material';
 import Sidebar from './Sidebar'; 
 import API from '../api'; 
 import moment from 'moment'; 
 import { Link } from 'react-router-dom';
 
-
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]); 
   const [loading, setLoading] = useState(true); 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredTasks, setFilteredTasks] = useState([]);
 
   //fetch from api
   useEffect(() => {
@@ -19,10 +20,24 @@ const Dashboard = () => {
     try {
       const response = await API.get('/tasks'); 
       setTasks(response.data); 
+      setFilteredTasks(response.data); 
     } catch (error) {
       console.error('Error fetching tasks:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // search by category
+  const handleSearch = () => {
+    if (searchQuery.trim() === '') {
+      setFilteredTasks(tasks);
+    } else {
+      // tasks based on category
+      const filtered = tasks.filter(task => 
+        task.category?.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredTasks(filtered);
     }
   };
 
@@ -34,6 +49,20 @@ const Dashboard = () => {
       <Sidebar />
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        {/* Search bar */}
+        <Box sx={{ display: 'flex', marginBottom: 3 }}>
+          <TextField
+            label="Search by Category"
+            variant="outlined"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ flexGrow: 1, marginRight: 2 }}
+          />
+          <Button variant="contained" onClick={handleSearch}>
+            Search
+          </Button>
+        </Box>
+
         {loading ? (
           <Typography>Loading tasks...</Typography>
         ) : (
@@ -65,8 +94,8 @@ const Dashboard = () => {
             </Grid>
 
             {/* Task Cards Section */}
-            {tasks.length > 0 ? (
-              tasks.map((task) => (
+            {filteredTasks.length > 0 ? (
+              filteredTasks.map((task) => (
                 <Grid item xs={12} sm={6} md={4} key={task.id}>           
                   <Link to={`/edit-task/${task.id}`} style={{ textDecoration: 'none' }}>
                     <Card sx={{ height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}>
@@ -84,7 +113,7 @@ const Dashboard = () => {
                </Grid>
               ))
             ) : (
-              <Typography>No tasks available.</Typography>
+              <Typography>No tasks found under this category.</Typography>
             )}
 
             
