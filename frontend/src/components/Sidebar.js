@@ -1,24 +1,24 @@
 import React from 'react';
-import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Box, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Link } from 'react-router-dom';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ChatIcon from '@mui/icons-material/Chat';
-import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AddIcon from '@mui/icons-material/Add';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const Sidebar = () => {
   return (
-    <Drawer
-      variant="permanent"
+    <Box
       sx={{
-        width: 240,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: 240,
-          boxSizing: 'border-box',
-        },
+        width: 200, 
+        height: '100vh', 
+        backgroundColor: '#f4f4f4',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        paddingTop: 2,
       }}
     >
       <List>
@@ -36,7 +36,6 @@ const Sidebar = () => {
           <ListItemText primary="Add Task" />
         </ListItem>
 
-        {/* Add Category Link */}
         <ListItem button component={Link} to="/add-category">
           <ListItemIcon>
             <AddIcon />
@@ -58,7 +57,7 @@ const Sidebar = () => {
           <ListItemText primary="Settings" />
         </ListItem>
       </List>
-    </Drawer>
+    </Box>
   );
 };
 
