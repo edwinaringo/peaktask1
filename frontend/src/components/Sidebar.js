@@ -1,10 +1,12 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Link } from 'react-router-dom';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ChatIcon from '@mui/icons-material/Chat';
 import SettingsIcon from '@mui/icons-material/Settings';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import AddIcon from '@mui/icons-material/Add';
 
 const Sidebar = () => {
   return (
@@ -20,31 +22,28 @@ const Sidebar = () => {
       }}
     >
       <List>
-        <ListItem button>
+        <ListItem button component={Link} to="/dashboard">
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItem>
-        <ListItem button>
+
+        <ListItem button component={Link} to="/add-task">
           <ListItemIcon>
-            <AccessTimeIcon />
+            <AddIcon />
           </ListItemIcon>
-          <ListItemText primary="Today's Task" />
+          <ListItemText primary="Add Task" />
         </ListItem>
-        <ListItem button>
+
+        <ListItem button component={Link} to="/completed-tasks">
           <ListItemIcon>
             <CheckCircleIcon />
           </ListItemIcon>
           <ListItemText primary="Completed Tasks" />
         </ListItem>
-        <ListItem button>
-          <ListItemIcon>
-            <ChatIcon />
-          </ListItemIcon>
-          <ListItemText primary="Messages" />
-        </ListItem>
-        <ListItem button>
+
+        <ListItem button component={Link} to="/settings">
           <ListItemIcon>
             <SettingsIcon />
           </ListItemIcon>
