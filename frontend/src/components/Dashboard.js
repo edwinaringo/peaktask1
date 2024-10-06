@@ -3,6 +3,8 @@ import { Grid, Card, CardContent, Typography, Box, Avatar, LinearProgress, Butto
 import Sidebar from './Sidebar'; 
 import API from '../api'; 
 import moment from 'moment'; 
+import { Link } from 'react-router-dom';
+
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([]); 
@@ -65,21 +67,21 @@ const Dashboard = () => {
             {/* Task Cards Section */}
             {tasks.length > 0 ? (
               tasks.map((task) => (
-                <Grid item xs={12} sm={6} md={4} key={task.id}>
-                  <Card sx={{ height: '200px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <CardContent>
-                      <Typography variant="subtitle1">{moment(task.dueDate).format('MMM D, YYYY')}</Typography>
-                      <Typography variant="h6">{task.title}</Typography>
-                      <Typography variant="body2">{task.progress}% Complete</Typography>
-                      <LinearProgress variant="determinate" value={task.progress} sx={{ mt: 1 }} />
-                    </CardContent>
-                    <CardContent sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body2">
-                        {moment(task.dueDate).diff(moment(), 'days')} days left
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <Grid item xs={12} sm={6} md={4} key={task.id}>           
+                  <Link to={`/edit-task/${task.id}`} style={{ textDecoration: 'none' }}>
+                    <Card sx={{ height: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', cursor: 'pointer' }}>
+                      <CardContent>                       
+                        <Typography variant="h6">{task.title}</Typography>
+                        <Typography variant="body2" color="textSecondary">Priority: {task.priority}</Typography>                       
+                        <Typography variant="body2" color="textSecondary">
+                          Due Date: {task.dueDate ? moment(task.dueDate).format('MMM D, YYYY') : 'No due date'}
+                        </Typography> 
+                        <Typography variant="body2">Progress: {task.progress}%</Typography>
+                        <LinearProgress variant="determinate" value={task.progress} sx={{ mt: 1 }} />
+                      </CardContent>
+                    </Card>
+                  </Link>
+               </Grid>
               ))
             ) : (
               <Typography>No tasks available.</Typography>

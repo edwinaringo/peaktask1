@@ -7,6 +7,7 @@ import Categories from './components/Categories';
 import Login from './components/Login';
 import Register from './components/Register';
 import Calendar from './components/Calender';
+import EditTask from './components/EditTask';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
           <Route path="/add-task" element={<AddTask />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/calendar" element={<Calendar />} />
+          <Route path="/edit-task/:id" element={<EditTask />} /> 
+
           <Route path="/" element={<Login />} />
         </Routes>
       </div>
