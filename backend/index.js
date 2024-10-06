@@ -11,6 +11,17 @@ const PORT = process.env.PORT || 5003;
 app.use(express.json());
 app.use(cors());
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;"
+  );
+  next();
+});
+
+
+
+
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/tasks', taskRoutes);
